@@ -6,7 +6,6 @@ spec:
   hard:
     pods: "6" 
     limits.cpu: "4" 
-    limits.memory: "2Gi" 
-    limits.ephemeral-storage: "4Gi" 
-  scopes:
-  - NotTerminating
+    limits.memory: "3Gi" 
+    requests.cpu: "2"
+    requests.memory: "2Gi"
