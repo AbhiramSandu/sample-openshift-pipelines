@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    git url: 'https://github.com/piomin/sample-openshift-pipelines.git', branch: 'master'
+                }
+            }
+        }
+        stage('Create') {
+            steps {
+                script {
+                    def projectName = input message:'Name of project', parameters: [stringParam(defaultValue: 'XXX', description: '', name: 'Project name')]
+                    env.PROJECT_NAME = projectName
+                    openshift.withCluster() {
+                        openshift.withCredentials('admin-token') {
+                            openshift.newProject(env.PROJECT_NAME)
+                        }
+                    }
+                }
+            }
+        }
+        stage('Init') {
+            steps {
+                script {
+                    openshift.withCluster() {
+                        openshift.withProject(env.PROJECT_NAME) {
+                            openshift.withCredentials('admin-token') {
+                                def files = findFiles glob: '*.yaml'
+                                files.each {
+                                    def yaml = readFile it.name
+                                    def json = openshift.apply(yaml)
+                                    print "Config applied: ${json}"
+                                }
+                            }
+                        }    
+                    }
+                }
+            }
+        }
+    }
+}
