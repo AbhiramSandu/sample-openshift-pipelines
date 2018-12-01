@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: RoleBinding
+metadata:
+  creationTimestamp: null
+  name: admins
+  namespace: ${PROJECT_NAME}
+roleRef:
+  name: view
+subjects:
+- kind: User
+  name: developer
+userNames:
+- developer
